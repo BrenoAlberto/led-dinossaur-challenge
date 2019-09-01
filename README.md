@@ -1,4 +1,3 @@
-
 # Fastest Dinossaur Script
 ## Challenge description
 The challenge will evalue the following items:
@@ -22,3 +21,16 @@ You should send us the following file:
 2. code.txt; The code used to generate the output.
 
 Use languages and technologies that you have domain to present the best result!
+
+## How to run the script
+
+- Create a virtual enviroment and activate it:
+- - python -m venv env
+- - cd env/Scripts
+- - activate
+
+- Install the requirements:
+- - pip install requirements.txt
+
+- Run the script:
+- - python code.py

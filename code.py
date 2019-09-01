@@ -39,7 +39,7 @@ def get_merged_csv_data(file_1: str, file_2: str, on: str, how: str) -> pd.DataF
         file_1: The first csv path.
         file_1: The second csv path.
         on: Column or index level names to join on
-        how: Type of merge to be performed, a database-style join.
+        how: Type of merge to be performed, a database-style join. {‘left’, ‘right’, ‘outer’, ‘inner’}
 
     Returns:
         A DataFrame of the two merged objects.
@@ -108,6 +108,9 @@ fastest_bipedals = get_fastest_dinossaurs_by_stance(dinossaurs, 'bipedal')
 
 save_attribute_into_text(fastest_bipedals, 'name', 'output.txt')
 
+# manually deleting variables because the challenge requires all code in the same file
+del [dinos_df, dinossaurs, fastest_bipedals]
+
 # ==================================== UNIT TESTING ====================================
 import unittest
 
@@ -121,6 +124,62 @@ class TestDinossaur(unittest.TestCase):
         d = Dinossaur('Deinonychus', float('nan'), float('nan'), 1.21, 'bipedal')
         velocity = getattr(d, 'velocity')
         self.assertEqual(True, math.isnan(velocity))
+
+class TestMainMethods(unittest.TestCase):
+    def test_csv_to_df_merge(self):
+        file_1, file_2, on, how = ['dataset1.csv', 'dataset2.csv', 'NAME', 'inner']
+        df = get_merged_csv_data(file_1, file_2, on, how)
+
+        self.assertEqual(any(df.NAME == 'Deinonychus'), False)
+        self.assertEqual(any(df.NAME == 'Euoplocephalus'), True)
+
+        how = 'outer'
+        df = get_merged_csv_data(file_1, file_2, on, how)
+        self.assertEqual(any(df.NAME == 'Deinonychus'), True)
+
+    def test_csv_to_df_merge_invalid_attr(self):
+        file_1, file_2, on, how = ['dataset1.csv', 'dataset3.csv', 'NAME', 'inner']
+        with self.assertRaises(FileNotFoundError):
+            get_merged_csv_data(file_1, file_2, on, how)
+        
+        file_2, on = ['dataset2.csv', 'STANCE']
+        with self.assertRaises(KeyError):
+            get_merged_csv_data(file_1, file_2, on, how)
+
+        on, how = ['NAME', 'from']
+        with self.assertRaises(KeyError):
+            get_merged_csv_data(file_1, file_2, on, how)
+    
+    def test_create_dinos_from_df(self):
+        df = pd.DataFrame(columns=['NAME', 'LEG_LENGTH', 'DIET', 'STRIDE_LENGTH', 'STANCE'])
+        df.loc[0] = 'Euoplocephalus', 1.6, 'herbivore', 1.87, 'quadrupedal'
+        df.loc[1] = 'Deinonychus', float('nan'), float('nan'), 1.21, 'bipedal'
+
+        list_of_dino = create_dinossaurs_objects_from_data_frame(df)
+        for dino in list_of_dino:
+            self.assertIsInstance(dino, Dinossaur)
+    
+    def test_create_dinos_from_df_invalid_attr(self):
+        df = pd.DataFrame(columns=['NAME', 'LEG_LENGTH', 'DIET', 'STRIDE_LENGTH', 'STANCE'])
+        df.loc[0] = 'Euoplocephalus', '1.6', 'herbivore', 1.87, 'quadrupedal'
+
+        with self.assertRaises(TypeError):
+            create_dinossaurs_objects_from_data_frame(df)
+
+    def test_get_fastest_dinos_by_stance(self):
+        dinossaurs = [Dinossaur('Euoplocephalus', 1.6, 'herbivore', 1.87, 'quadrupedal'), Dinossaur('Deinonychus', float('nan'), float('nan'), 1.21, 'bipedal'), Dinossaur('Hadrosaurus', 1.2, 'herbivore', 1.4, 'bipedal')]        
+        fastest_quadrupedals = get_fastest_dinossaurs_by_stance(dinossaurs, 'quadrupedal')
+
+        for quadrupedal in fastest_quadrupedals:
+            self.assertEqual(getattr(quadrupedal, 'stance'), 'quadrupedal')
+
+        fastest_bipedals = get_fastest_dinossaurs_by_stance(dinossaurs, 'bipedals')
+
+        for bipedal in fastest_bipedals:
+            self.assertEqual(getattr(bipedal, 'stance'), 'bipedal')
+
+        fastest_tetrapods = get_fastest_dinossaurs_by_stance(dinossaurs, 'tetrapods')
+        self.assertEqual(fastest_tetrapods, [])
 
 if __name__ == '__main__':
     unittest.main()

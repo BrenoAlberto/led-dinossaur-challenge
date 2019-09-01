@@ -107,3 +107,20 @@ dinossaurs = create_dinossaurs_objects_from_data_frame(dinos_df)
 fastest_bipedals = get_fastest_dinossaurs_by_stance(dinossaurs, 'bipedal')
 
 save_attribute_into_text(fastest_bipedals, 'name', 'output.txt')
+
+# ==================================== UNIT TESTING ====================================
+import unittest
+
+class TestDinossaur(unittest.TestCase):
+    def test_velocity(self):
+        d = Dinossaur('Euoplocephalus', 1.6, 'herbivore', 1.87, 'quadrupedal')
+        velocity = getattr(d, 'velocity')
+        self.assertEqual(2.09, velocity)
+
+    def test_nan_velocity(self):
+        d = Dinossaur('Deinonychus', float('nan'), float('nan'), 1.21, 'bipedal')
+        velocity = getattr(d, 'velocity')
+        self.assertEqual(True, math.isnan(velocity))
+
+if __name__ == '__main__':
+    unittest.main()

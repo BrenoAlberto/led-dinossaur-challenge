@@ -5,6 +5,16 @@ import operator
 
 class Dinossaur:
     def __init__(self, name: str, leg_length: float, diet: str, stride_length: float, stance: str) -> None:
+        """ Dinossaur constructor.
+
+        Args:
+            name: The name of the dinossaur
+            leg_length: The leg length of the dinossaur 
+            diet: The type of diet of the dinossaur
+            stride_length: The stride length of the dinossaur 
+            stance: The stance of the dinossaur 
+            
+        """
         self.name = name
         self.leg_length = leg_length
         self.diet = diet
@@ -23,7 +33,18 @@ class Dinossaur:
         return round((stride_length / leg_length - 1) * math.sqrt(leg_length * g), 2)
 
 def get_merged_csv_data(file_1: str, file_2: str, on: str, how: str) -> pd.DataFrame:
-    # read csv into DataFrame
+    """ Read two csv into DataFrames and merge then together
+
+    Args:
+        file_1: The first csv path.
+        file_1: The second csv path.
+        on: Column or index level names to join on
+        how: Type of merge to be performed, a database-style join.
+
+    Returns:
+        A DataFrame of the two merged objects.
+
+    """
 
     df1 = pd.read_csv(file_1)
     df2 = pd.read_csv(file_2)
@@ -32,6 +53,15 @@ def get_merged_csv_data(file_1: str, file_2: str, on: str, how: str) -> pd.DataF
 
 
 def create_dinossaurs_objects_from_data_frame(dinos_df: pd.DataFrame) -> List[Dinossaur]:
+    """ Create dinossaurs instances from a DataFrame
+
+    Args:
+        dinos_df: The dinossaurs DataFrame
+
+    Returns:
+        A list of instances of Dinossaur
+
+    """
     dinossaurs = []
 
     for index, row in dinos_df.iterrows():
@@ -40,16 +70,33 @@ def create_dinossaurs_objects_from_data_frame(dinos_df: pd.DataFrame) -> List[Di
     return dinossaurs
 
 def get_fastest_dinossaurs_by_stance(dinossaurs: List[Dinossaur], stance: str) -> List[Dinossaur]:
-    bipedals = []
+    """ Create a list of dinossaurs by stance and sort by their velocity
+
+    Args:
+        dinossaurs: The list of dinossaurs objects
+        stance: The stance required of the dinossaurs
+
+    Returns:
+        A list of instances of Dinossaur
+
+    """
+    dinossaurs_by_stance = []
 
     for dinossaur in dinossaurs:
         if getattr(dinossaur, 'stance') == stance:
-            bipedals.append(dinossaur)
+            dinossaurs_by_stance.append(dinossaur)
 
-    return sorted(bipedals, key= lambda o: float('-inf') if math.isnan(getattr(o, 'velocity')) else getattr(o, 'velocity'), reverse=True)
+    return sorted(dinossaurs_by_stance, key= lambda o: float('-inf') if math.isnan(getattr(o, 'velocity')) else getattr(o, 'velocity'), reverse=True)
 
 def save_attribute_into_text(objects: List[object], attribute: str, file: str) -> None:
+    """ Save a desired attribute of a list of objects on a .txt file
 
+    Args:
+        objects: The list of objects
+        attribute: The attribute of the objects
+        file: The path on which the attr will be saved
+
+    """
     with open(file, 'w') as f:
         for obj in objects:
             f.write(getattr(obj, attribute) + '\n')
